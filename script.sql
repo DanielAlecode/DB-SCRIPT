@@ -1,13 +1,13 @@
 CREATE DATABASE IF NOT EXISTS CKTES; 
 USE CKTES; 
 
-
 /*CARGOS Y PERMISOS DE LOS EMPLEADOS*/
 CREATE TABLE cargos(
 id_cargo INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 cargo VARCHAR(50) NOT NULL, 
 descripcion_cargo VARCHAR(50) NOT NULL
 );
+
 
 CREATE TABLE permisos(
 id_permiso INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
@@ -51,18 +51,18 @@ id_zona INT NOT NULL
 
 /*APARTADO DE EMPLEADOS*/
 CREATE TABLE empleados(
-id_permiso INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+id_empleado INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 nombre_empleado VARCHAR(70) NOT NULL,  
 apellido_empleado VARCHAR(70) NOT NULL,  
 direccion VARCHAR(70) NOT NULL,  
 email varchar(100) NOT NULL, 
 id_sector INT NOT NULL, 
-CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+CHECK (email LIKE '%@%')
 );
 
 CREATE TABLE usuarios(
 id_usuario INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
-id_rol INT NOT NULL, 
+id_cargo INT NOT NULL, 
 id_empleado INT NOT NULL, 
 username VARCHAR(50) NOT NULL, 
 passwd VARCHAR(100) NOT NULL
@@ -100,11 +100,6 @@ id_empleado INT NOT NULL,
 id_mediamento_enfermedad INT NOT NULL
 );
 
-CREATE TABLE detalle_enfermedades(
-id_detalle_enfermedad INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
-id_enfermedad INT NOT NULL,
-id_empleado INT NOT NULL
-);
 
 /*APARTADO DE ACCIDENTES*/
 CREATE TABLE jefes_inmediatos (
@@ -145,5 +140,42 @@ CREATE TABLE accidentes (
     fecha_accidente DATE NOT NULL,
     descripcion TEXT
 );
+
+/*RESTRICCION ENTRE Permisos que se le asignaran a los cargos*/
+ALTER TABLE permisos
+ADD CONSTRAINT fk_permisos_cargos
+FOREIGN KEY (id_cargo)
+REFERENCES cargos(id_cargo);
+
+/*RESTRICCION ENTRE tipo zona que se le asignaran a las zonas*/
+ALTER TABLE zonas
+ADD CONSTRAINT fk_tipo_zonas_zonas
+FOREIGN KEY (id_tipo_zona)
+REFERENCES tipo_zona(id_tipo_zona);
+
+/*RESTRICCION ENTRE areas que se le asignaran a los sectores*/
+ALTER TABLE sectores
+ADD CONSTRAINT fk_sectores_areas
+FOREIGN KEY (id_area)
+REFERENCES areas(id_area);
+
+/*RESTRICCION ENTRE zonas que se le asignaran a los sectores*/
+ALTER TABLE sectores
+ADD CONSTRAINT fk_sectores_zonas
+FOREIGN KEY (id_zona)
+REFERENCES zonas(id_zona);
+
+/*RESTRICCION ENTRE usuarios que se le asignaran a los empleados*/
+ALTER TABLE usuarios
+ADD CONSTRAINT fk_usuario_empleados
+FOREIGN KEY (id_empleado)
+REFERENCES empleados(id_empleado);
+
+/*RESTRICCION ENTRE cargos que se le asignaran a los usuario que pertenecen a los empleados*/
+ALTER TABLE usuarios
+ADD CONSTRAINT fk_usuario_cargos
+FOREIGN KEY (id_cargo)
+REFERENCES cargos(id_cargo);
+ 
 
 
