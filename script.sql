@@ -1,6 +1,8 @@
 CREATE DATABASE IF NOT EXISTS CKTES; 
 USE CKTES; 
 
+
+/*CARGOS Y PERMISOS DE LOS EMPLEADOS*/
 CREATE TABLE cargos(
 id_cargo INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 cargo VARCHAR(50) NOT NULL, 
@@ -19,16 +21,23 @@ los roles se le asignan a los empleados sin tener que crear permisos para
 un solo empleado y no ayudará a gestionar y optimizar mejor la base de datos*/
 );
 
+/*APARTADO DE ZONAS*/
 CREATE TABLE areas(
 id_area INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 area VARCHAR(50) NOT NULL, 
 descripcion_area VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE tipo_zona(
+id_tipo_zona INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+tipo_zona VARCHAR(50) NOT NULL
+);
+
 CREATE TABLE zonas(
 id_zona INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 zona  VARCHAR(50) NOT NULL, 
-descripcion_zona VARCHAR(50) NOT NULL
+descripcion_zona VARCHAR(50) NOT NULL, 
+id_tipo_zona INT NOT NULL
 );
 
 CREATE TABLE sectores(
@@ -39,6 +48,8 @@ id_area INT NOT NULL,
 id_zona INT NOT NULL 
 );
 
+
+/*APARTADO DE EMPLEADOS*/
 CREATE TABLE empleados(
 id_permiso INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
 nombre_empleado VARCHAR(70) NOT NULL,  
@@ -57,25 +68,82 @@ username VARCHAR(50) NOT NULL,
 passwd VARCHAR(100) NOT NULL
 );
 
-DELIMITER //
+/*APARTADO DE ALERGIAS Y ENFERMEDADES*/
+CREATE TABLE enfermedades(
+id_enfermedad INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+enfermedad VARCHAR(50) NOT NULL,
+descripcion_enfermedad VARCHAR(50) NOT NULL
+);
 
-CREATE PROCEDURE obtener_informacion_empleado(IN p_id_usuario INT)
-BEGIN
-    SELECT 
-        u.id_usuario,
-        e.nombre_empleado,
-        e.apellido_empleado,
-        e.email,
-        c.cargo
-    FROM 
-        usuarios u
-    INNER JOIN 
-        empleados e ON u.id_empleado = e.id_empleado
-    INNER JOIN 
-        cargos c ON u.id_rol = c.id_cargo
-    WHERE 
-        u.id_usuario = p_id_usuario;
-END //
+CREATE TABLE medicamentos(
+id_medicamento INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+medicamento VARCHAR(50) NOT NULL,
+descripcion_medicamento VARCHAR(50) NOT NULL
+);
 
-DELIMITER ;
+CREATE TABLE alergias(
+id_alergia INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+alergia VARCHAR(50) NOT NULL,
+descripcion_alergia VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE detalle_alergias(
+id_detalle_alergia INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+id_alergia INT NOT NULL,
+id_empleado INT NOT NULL
+);
+
+CREATE TABLE detalle_enfermedades(
+id_detalle_enfermedad INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+id_enfermedad INT NOT NULL,
+id_empleado INT NOT NULL, 
+id_mediamento_enfermedad INT NOT NULL
+);
+
+CREATE TABLE detalle_enfermedades(
+id_detalle_enfermedad INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE, 
+id_enfermedad INT NOT NULL,
+id_empleado INT NOT NULL
+);
+
+/*APARTADO DE ACCIDENTES*/
+CREATE TABLE jefes_inmediatos (
+    id_jefe INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    nombre VARCHAR(50) NOT NULL,
+    apellido VARCHAR(50) NOT NULL, 
+    id_zona INT NOT NULL
+);
+
+CREATE TABLE partes_cuerpo (
+    id_parte INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    parte VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE tipos_accidente (
+    id_tipo_accidente INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    tipo_accidente VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE evidencias (
+    id_evidencia INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    id_accidente INT NOT NULL,
+    ruta_imagen VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE partes_cuerpo_accidente(
+id_parte_cuerpo_accidente INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+id_accidente INT NOT NULL,
+id_parte_cuerpo INT NOT NULL
+);
+
+CREATE TABLE accidentes (
+    id_accidente INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    id_jefe INT NOT NULL,
+    id_partes_cuerpo INT NOT NULL,
+    id_tipo_accidente INT NOT NULL,
+    recomendaciones VARCHAR(100) NOT NULL,
+    fecha_accidente DATE NOT NULL,
+    descripcion TEXT
+);
+
 
